@@ -1,0 +1,111 @@
+﻿@model HostContestApp.Domain.Entities.Form
+
+
+    @{
+        ViewBag.Title = "Админ панель: редактирование";
+        ViewBag.Dt = Model.ClosingDate;
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+  <div class="panel">
+    <div class="panel-heading">
+        <h3>Редактирование формы № @Model.FormId</h3>
+    </div>
+      
+    @using (Html.BeginForm("Edit", "Admin",
+                         FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="panel-body">
+            @Html.HiddenFor(m => m.FormId)
+            @Html.HiddenFor(x => x.ResponsiblePersonName)
+            @Html.HiddenFor(x => x.Attachment)
+            @Html.HiddenFor(x => x.AttachmentName)
+            @Html.HiddenFor(m => m.DateEditedXTimes)
+            @Html.HiddenFor(x => x.ClosingDate1)
+            @Html.HiddenFor(x => x.ClosingDate2)
+            @Html.HiddenFor(x => x.ClosingDate3)
+
+           
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Description)
+            </div>
+            <div class="editor-field">
+                @Html.TextArea("Description", null, new { @class = "form-control", id = "submitButton", rows = 3, maxlength = 300, placeholder = "Введите описание (не больше 300 символов)",
+               oninput = "if(this.value.length > 299) {alert('Описание не может быть длинее 300 символов!')}"})
+           
+                
+
+                <span style="color:red"> @Html.ValidationMessageFor(model => model.Description)</span>
+            </div>
+
+            <br>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.ClosingDate) (дату можно менять только 3 раза)
+                <div>Вы меняли дату @Model.DateEditedXTimes раз(а)</div>
+                
+                @if (@Model.ClosingDate1.Day != Model.Date.Day)
+                {
+                    <div>Ранее указанные даты: </div>
+                    @Model.ClosingDate1.ToString("dd-MM-yyyy")
+                    
+                }
+                @if (@Model.ClosingDate2.Day != Model.Date.Day)
+                {
+                        <span>, </span>    
+                        @Model.ClosingDate2.ToString("dd-MM-yyyy")                                      
+                }
+                @if (@Model.ClosingDate3.Day != Model.Date.Day)
+                {
+                    <span>, </span>
+                    @Model.ClosingDate3.ToString("dd-MM-yyyy")                   
+                }
+
+                
+            </div>
+            <div class="editor-field">              
+                @Html.TextBoxFor(x => x.ClosingDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date" })
+               
+                <span style="color:red">@Html.ValidationMessageFor(model => model.ClosingDate)</span>
+            </div>
+
+            <br>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.TypeId)
+
+            </div>
+            <div class="editor-field">
+                @Html.DropDownList("types", new SelectList(new int?[] { 1, 2, 3, 4 }))
+                <span style="color:red">@Html.ValidationMessageFor(model => model.TypeId)</span>
+            </div>
+
+            <br>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.AttachmentName)
+                <br />
+                @if (@Model.AttachmentName != null)
+                {
+                    <span>@Model.AttachmentName</span>
+                    <br />
+                     @Html.ActionLink("Удалить файл", "DeleteAtt", new { Model.FormId },
+                             new { onclick = "return confirm('Вы уверены, что хотите удалить файл?')" })
+                    <br />
+                    @Html.ActionLink("Скачать файл", "Download", new { Model.FormId })
+
+                }
+                else
+                {
+                    <span>Файл еще не загружен</span>
+                    <input type="file" name="uploadFile" />
+                   }
+            </div>
+        </div>
+       
+
+        <div class="panel-footer">
+            <input type="submit" value="Сохранить" class="btn btn-primary" />
+            @Html.ActionLink("Отменить изменения и вернуться к списку", "Index", null, new
+       {
+           @class = "btn btn-default"
+       })
+        </div>
+    }
+</div>
